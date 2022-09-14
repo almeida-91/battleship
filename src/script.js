@@ -61,6 +61,3 @@ export function newGameboard(){
         }
     }
 }
-
-export let b = newGameboard();
-b.newboard();
