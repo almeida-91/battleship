@@ -1,4 +1,4 @@
-import { newGameboard } from "./script";
+import { newGameboard, player } from "./script";
 
 test('create board',()=>{
     let b = newGameboard();
@@ -41,7 +41,7 @@ test('Receive attack hit', ()=>{
     let b = newGameboard();
     b.newboard();
     b.placeShip(2,0,0,"horizontal")
-    expect(b.receiveAttack(0,0)).toStrictEqual([0]);
+    expect(b.receiveAttack(0,0)).toBe('X');
 })
 
 test('Game Over false', ()=>{
@@ -55,4 +55,18 @@ test('Game Over true', ()=>{
     let b = newGameboard();
     b.newboard();
     expect(b.allSunk()).toBe(true);
+})
+
+test('Player attack', ()=>{
+    let player1 = player();
+    player1.name = 'P1';
+    let cpu = player();
+    cpu.name = 'CPU';
+    player1.enemy = cpu;
+    cpu.enemy = player1;
+    player1.board.newboard();
+    cpu.board.newboard();
+    cpu.board.placeShip(cpu.ships[0][0].length,0,0,'horizontal');
+    player1.play(0,0);
+    expect(cpu.board.board[0]).toBe('X');
 })

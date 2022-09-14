@@ -7,6 +7,7 @@ export function newShip(length){
 
         hit : function (coords){
             this.hitAreas.push(coords);
+            this.isSunk();
         },
 
         isSunk : function (){
@@ -45,7 +46,8 @@ export function newGameboard(){
                 target = 'M';
             } else {
                 target.hit(coords);
-                return target.hitAreas;
+                this.board[coords] = 'X';
+                return this.board[coords];
             }
             return target;
         },
@@ -59,5 +61,28 @@ export function newGameboard(){
             }
             return (aliveShips.length == 0) ? true : false;
         }
+    }
+}
+
+export function player(name) {
+    return {
+        name : name,
+        enemy : null,
+        board : newGameboard(),
+        ships : [[newShip(4),1],
+                [newShip(3),2],
+                [newShip(2),3],
+                [newShip(1),4]],
+        play : function(coordX,coordY){
+            this.enemy.board.receiveAttack(coordX,coordY);
+        },
+        autoPlay : function(){
+            let coordX = parseInt(Math.random()*9);
+            let coordY = parseInt(Math.random()*9);
+            let coords = coordY*10 + coordX;
+            if (this.enemy.board[coords] != 'M'){
+                this.enemy.board.receiveAttack(coordX,coordY);
+            }
+        },
     }
 }
