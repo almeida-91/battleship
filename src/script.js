@@ -42,12 +42,12 @@ export function newGameboard(){
         receiveAttack : function (coordx,coordy){
             let target = this.board[coordy*10+coordx];
             let coords = coordy*10+coordx;
+            if (target != 0 && typeof target != 'object' ) return null;
             if (target == 0){
-                target = 'M';
+                this.board[coords] = 'M';
             } else {
                 target.hit(coords);
                 this.board[coords] = 'X';
-                return this.board[coords];
             }
             return target;
         },
@@ -73,16 +73,23 @@ export function player(name) {
                 [newShip(3),2],
                 [newShip(2),3],
                 [newShip(1),4]],
-        play : function(coordX,coordY){
+        attack : function(coordX,coordY){
             this.enemy.board.receiveAttack(coordX,coordY);
         },
         autoPlay : function(){
-            let coordX = parseInt(Math.random()*9);
-            let coordY = parseInt(Math.random()*9);
+            let coordX = parseInt(Math.random()*10);
+            let coordY = parseInt(Math.random()*10);
             let coords = coordY*10 + coordX;
-            if (this.enemy.board[coords] != 'M'){
+            let target = this.enemy.board.board[coords];
+            if (target != 0 && typeof target != 'object' ) this.autoPlay();
+            if (typeof target == 'object' ){
                 this.enemy.board.receiveAttack(coordX,coordY);
-            }
+                this.autoPlay();
+            };
+            if (target != 'M'){
+                this.enemy.board.receiveAttack(coordX,coordY);
+            } 
+            
         },
     }
 }

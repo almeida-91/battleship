@@ -34,14 +34,16 @@ test('Place ship horizontal',()=>{
 test('Receive attack miss', ()=>{
     let b = newGameboard();
     b.newboard();
-    expect(b.receiveAttack(0,3)).toBe('M');
+    b.receiveAttack(0,3);
+    expect(b.board[30]).toBe('M');
 })
 
 test('Receive attack hit', ()=>{
     let b = newGameboard();
     b.newboard();
     b.placeShip(2,0,0,"horizontal")
-    expect(b.receiveAttack(0,0)).toBe('X');
+    b.receiveAttack(0,0);
+    expect(b.board[0]).toBe('X');
 })
 
 test('Game Over false', ()=>{
@@ -67,6 +69,6 @@ test('Player attack', ()=>{
     player1.board.newboard();
     cpu.board.newboard();
     cpu.board.placeShip(cpu.ships[0][0].length,0,0,'horizontal');
-    player1.play(0,0);
+    player1.attack(0,0);
     expect(cpu.board.board[0]).toBe('X');
 })
