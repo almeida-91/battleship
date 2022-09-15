@@ -1,0 +1,16 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(10,30px);
+    grid-template-rows: repeat(10,30px);
+    background-color: black;
+    gap: 1px;
+}
+
+.board div {
+    background-color: white;
+}
+
+#gameContainer {
+    display: flex;
+    justify-content: space-around;
+}
