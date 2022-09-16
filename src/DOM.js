@@ -78,7 +78,6 @@ function renderEnemyBoard(enemy,player){
     for (let i = 0 ; i < enemy.board.board.length ; i++){
         let renderSpot = enemy.board.board[i];
         let currentSpot = document.createElement('div');
-        currentSpot.setAttribute('draggable',true);
         if (renderSpot == 'M'){
             currentSpot.style.backgroundColor = 'cornflowerblue';
         } else if (renderSpot == 'X'){
