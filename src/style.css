@@ -14,3 +14,8 @@
     display: flex;
     justify-content: space-around;
 }
+
+.target:hover{
+    background-color: rgb(119, 255, 0);
+    border-color: 2px solid greenyellow;
+}

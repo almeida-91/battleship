@@ -63,7 +63,7 @@ export function newGameboard(){
             return (aliveShips.length == 0) ? true : false;
         },
 
-        checkIfFree(ship,coordX,coordY,orientation){
+        checkIfFit(ship,coordX,coordY,orientation){
             let coords = coordX+(coordY*10);
             if (orientation == 'vertical'){
                 if (coordY*10+ship.length*10 >100) return false;
@@ -73,7 +73,8 @@ export function newGameboard(){
             } else if (orientation == 'horizontal'){
                 if (coordX+ship.length > 10) return false;
                 for (let i = 0 ; i < ship.length ; i++){
-                    if (typeof (this.board[coordX+i])== 'object') return false;
+                    if (typeof (this.board[coordX+i])== 'object' || 
+                        typeof (this.board[coordX+i+coordY*10]) == 'object') return false;
                 }
             }
             return true;
@@ -101,7 +102,7 @@ export function player(name) {
             if (target != 0 && typeof target != 'object' ) this.autoPlay();
             if (typeof target == 'object' ){
                 this.enemy.board.receiveAttack(coordX,coordY);
-                this.autoPlay();
+                this.autoTargetNearby(coordX,coordY);
             };
             if (target != 'M'){
                 this.enemy.board.receiveAttack(coordX,coordY);
@@ -126,12 +127,62 @@ export function player(name) {
                     } else {
                         result = 'horizontal';
                     }
-                    if (this.board.checkIfFree(currentShip[0],coordX,coordY,result)==true){
+                    if (this.board.checkIfFit(currentShip[0],coordX,coordY,result)==true){
                         this.board.placeShip(currentShip[0],coordX,coordY,result);
                     } else {
                         i--;
                     }
                 }
+            }
+        },
+        
+        autoTargetNearby : function(coordX,coordY){
+            let direction = parseInt(Math.random()*2); 
+            // 0 = hor | 1 = ver
+            let newCoordX = coordX;
+            let newCoordY = coordY;
+
+            // horizontal nearby
+            if (direction == 0){
+                if (coordX+1 > 10){        
+                    newCoordX = coordX - 1;
+                } else if (coordX-1 < 0){
+                    newCoordX = coordX + 1;
+                } else { 
+                    // no border left or right of current coords
+                    direction = parseInt(Math.random()*2); 
+                    // 0 = left | 1 = right
+                    if (direction == 0){
+                        newCoordX = coordX - 1;
+                    } else {
+                        newCoordX = coordX + 1;
+                    }
+                }
+
+            // vertical nearby
+            } else {
+                if (coordY+1 > 10){
+                    newCoordY = coordY-1;
+                } else if (coordY-1 < 0){
+                    newCoordY = coordY+1;
+                } else {
+                    direction = parseInt(Math.random()*2); 
+                    // 0 = up | 1 = down
+                    if (direction == 0){
+                        newCoordY = coordY-1;
+                    } else {
+                        newCoordY = coordY+1;
+                    }
+                }
+            }
+            let target = this.enemy.board.board[newCoordX+(newCoordY*10)];
+            if (typeof target == 'object' ){
+                this.enemy.board.receiveAttack(newCoordX,newCoordY);
+                this.autoTargetNearby(newCoordX,newCoordY);
+            } else if(target == 'X' || target == 'M') {
+                this.autoTargetNearby(newCoordX,newCoordY);
+            } else {
+                this.enemy.board.receiveAttack(newCoordX,newCoordY);
             }
         }
     }

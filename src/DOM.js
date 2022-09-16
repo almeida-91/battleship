@@ -119,9 +119,12 @@ function isGameOver(player,cpu){
 }
 
 function showWinner(player){
+    let newGameButton = document.createElement('button');
+    newGameButton.addEventListener('click',startGame);
+    newGameButton.textContent = 'New Game';
     gameContainer.innerHTML = '';
     let winText = document.createElement('p');
     winText.textContent = `${player.name} Wins!`;
     gameContainer.appendChild(winText);
-    gameContainer.appendChild(startButton);
+    gameContainer.appendChild(newGameButton);
 }
