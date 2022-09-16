@@ -1,9 +1,12 @@
 import { player } from "./script.js";
 
 const startButton = document.getElementsByTagName('button')[0];
+const randomButton = document.getElementsByTagName('button')[1];
+
 let gameContainer = document.getElementById('gameContainer');
 
 startButton.addEventListener('click',startGame);
+//randomButton.addEventListener('click',randomize);
 
 function startGame(){
     let player1 = player();
@@ -15,7 +18,7 @@ function startGame(){
     cpu.board.newboard();
 
         /* For testing  */
-        player1.board.placeShip(4,0,0,'vertical');
+        /* player1.board.placeShip(4,0,0,'vertical');
         player1.board.placeShip(3,1,0,'vertical');
         player1.board.placeShip(3,2,0,'vertical');
         player1.board.placeShip(2,3,0,'vertical');
@@ -24,9 +27,10 @@ function startGame(){
         player1.board.placeShip(1,6,0,'vertical');
         player1.board.placeShip(1,7,0,'vertical');
         player1.board.placeShip(1,8,0,'vertical');
-        player1.board.placeShip(1,9,0,'vertical');
+        player1.board.placeShip(1,9,0,'vertical'); */
+        player1.randomizeBoard();
 
-        cpu.board.placeShip(4,0,0,'vertical');
+        /* cpu.board.placeShip(4,0,0,'vertical');
         cpu.board.placeShip(3,1,0,'vertical');
         cpu.board.placeShip(3,2,0,'vertical');
         cpu.board.placeShip(2,3,0,'vertical');
@@ -35,7 +39,8 @@ function startGame(){
         cpu.board.placeShip(1,6,0,'vertical');
         cpu.board.placeShip(1,7,0,'vertical');
         cpu.board.placeShip(1,8,0,'vertical');
-        cpu.board.placeShip(1,9,0,'vertical');
+        cpu.board.placeShip(1,9,0,'vertical'); */
+        cpu.randomizeBoard();
         /* Test end     */
 
     player1.enemy = cpu;
@@ -53,6 +58,7 @@ function renderPlayerBoard(player,cpu){
     for (let i = 0 ; i < player.board.board.length ; i++){
         let renderSpot = player.board.board[i];
         let currentSpot = document.createElement('div');
+        currentSpot.setAttribute('draggable',true);
         if (renderSpot == 'M'){
             currentSpot.style.backgroundColor = 'cornflowerblue';
         } else if (renderSpot == 'X'){
@@ -72,6 +78,7 @@ function renderEnemyBoard(enemy,player){
     for (let i = 0 ; i < enemy.board.board.length ; i++){
         let renderSpot = enemy.board.board[i];
         let currentSpot = document.createElement('div');
+        currentSpot.setAttribute('draggable',true);
         if (renderSpot == 'M'){
             currentSpot.style.backgroundColor = 'cornflowerblue';
         } else if (renderSpot == 'X'){
@@ -109,7 +116,7 @@ function isGameOver(player,cpu){
         showWinner(player);
         return true;
     }
-    return false
+    return false;
 }
 
 function showWinner(player){

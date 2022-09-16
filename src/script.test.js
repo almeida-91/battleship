@@ -1,4 +1,4 @@
-import { newGameboard, player } from "./script";
+import { newGameboard, newShip, player } from "./script";
 
 test('create board',()=>{
     let b = newGameboard();
@@ -20,14 +20,16 @@ test('create board',()=>{
 test('Place ship vertical',()=>{
     let b = newGameboard();
     b.newboard();
-    b.placeShip(2,2,3,"vertical");
+    let ship = newShip(2);
+    b.placeShip(ship,2,3,"vertical");
     expect(b.board[32]).toEqual(expect.objectContaining({"length": 2}))
 })
 
 test('Place ship horizontal',()=>{
     let b = newGameboard();
     b.newboard();
-    b.placeShip(2,0,0,"horizontal")
+    let ship = newShip(2);
+    b.placeShip(ship,0,0,"horizontal")
     expect(b.board[0]).toEqual(expect.objectContaining({"length": 2}))
 })
 
@@ -41,7 +43,8 @@ test('Receive attack miss', ()=>{
 test('Receive attack hit', ()=>{
     let b = newGameboard();
     b.newboard();
-    b.placeShip(2,0,0,"horizontal")
+    let ship = newShip(2);
+    b.placeShip(ship,0,0,"horizontal")
     b.receiveAttack(0,0);
     expect(b.board[0]).toBe('X');
 })
@@ -49,7 +52,8 @@ test('Receive attack hit', ()=>{
 test('Game Over false', ()=>{
     let b = newGameboard();
     b.newboard();
-    b.placeShip(2,0,0,"horizontal")
+    let ship = newShip(2);
+    b.placeShip(ship,0,0,"horizontal")
     expect(b.allSunk()).toBe(false);
 })
 
@@ -68,7 +72,24 @@ test('Player attack', ()=>{
     cpu.enemy = player1;
     player1.board.newboard();
     cpu.board.newboard();
-    cpu.board.placeShip(cpu.ships[0][0].length,0,0,'horizontal');
+    cpu.board.placeShip(cpu.ships[0][0],0,0,'horizontal');
     player1.attack(0,0);
     expect(cpu.board.board[0]).toBe('X');
+})
+
+test('Remove Ship', ()=>{
+    let player1 = player();
+    player1.board.newboard();
+    let ship = player1.ships[0][0];
+    player1.board.placeShip(ship.length,0,0,'vertical');
+    player1.removeShip(ship);
+    expect(player1.board.board[0]).toBe(0);
+})
+
+test('Ship comparison', ()=>{
+    let player1 = player();
+    player1.board.newboard();
+    let ship = player1.ships[0][0];
+    let ship1 = player1.ships[0][0];
+    expect(ship==ship1).toBe(true);
 })
