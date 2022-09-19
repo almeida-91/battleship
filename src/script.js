@@ -28,16 +28,17 @@ export function newGameboard(){
             },
 
         placeShip : function(ship, coordx, coordy, orientation){
-            ship.start.push(coordx);
-            ship.start.push(coordy);
-            ship.orientation = orientation;
+            let currentShip = newShip(ship.length);
+            currentShip.start.push(coordx);
+            currentShip.start.push(coordy);
+            currentShip.orientation = orientation;
             if (orientation == 'vertical'){
                 for (let i = 0 ; i < ship.length ; i++){
-                    this.board[(coordy+i)*10+coordx] = ship;
+                    this.board[(coordy+i)*10+coordx] = currentShip;
                 }
             } else {
                 for (let i = 0 ; i < ship.length ; i++){
-                    this.board[coordy*10+coordx+i] = ship;
+                    this.board[coordy*10+coordx+i] = currentShip;
                 }
             }
             return this.board;

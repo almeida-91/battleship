@@ -115,10 +115,12 @@ function showWinner(player){
 function dragEvents(player){
     const draggables = document.querySelectorAll('.playerDrag');
     let currentShip = null;
+    let currentIndex = null;
     
     draggables.forEach(draggable =>{
         draggable.addEventListener('dragstart', ()=>{
             let index = draggable.getAttribute('id');
+            currentIndex = index;
             currentShip = player.board.board[index];
         });
     });
@@ -126,6 +128,7 @@ function dragEvents(player){
     draggables.forEach(draggable =>{
         draggable.addEventListener('dragover', e =>{
             e.preventDefault();
+            draggable.classList.add('dragover');
         })
     })
 
@@ -139,6 +142,11 @@ function dragEvents(player){
             let coordY = parseInt(index / 10);
             let checkFit = player.board.checkIfFit(currentShip, coordX,coordY, currentShip.orientation)
             if (checkFit == true){
+                player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
+                renderPlayerBoard(player,player.enemy);
+            } else {
+                coordX = currentIndex % 10;
+                coordY = parseInt(currentIndex / 10);
                 player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
                 renderPlayerBoard(player,player.enemy);
             }

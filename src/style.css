@@ -19,3 +19,7 @@
     background-color: rgb(119, 255, 0);
     border-color: 2px solid greenyellow;
 }
+
+.dragover {
+    background-color: rgb(119, 255, 0);
+}
