@@ -77,8 +77,7 @@ export function newGameboard(){
             } else if (orientation == 'horizontal'){
                 if (coordX+ship.length > 10) return false;
                 for (let i = 0 ; i < ship.length ; i++){
-                    if (typeof (this.board[coordX+i])== 'object' || 
-                        typeof (this.board[coordX+i+coordY*10]) == 'object') return false;
+                    if (typeof (this.board[coordX+i+coordY*10]) == 'object') return false;
                 }
             }
             return true;

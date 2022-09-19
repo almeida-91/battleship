@@ -49,7 +49,8 @@ function renderPlayerBoard(player,cpu){
         playerBoard.appendChild(currentSpot);
     }
     gameContainer.appendChild(playerBoard);
-    dragEvents(player);
+    addDragEvents(player);
+    addClickEvents(player);
     renderEnemyBoard(cpu,player);
 }
 
@@ -112,15 +113,13 @@ function showWinner(player){
 
 
 
-function dragEvents(player){
+function addDragEvents(player){
     const draggables = document.querySelectorAll('.playerDrag');
     let currentShip = null;
-    let currentIndex = null;
     
     draggables.forEach(draggable =>{
         draggable.addEventListener('dragstart', ()=>{
             let index = draggable.getAttribute('id');
-            currentIndex = index;
             currentShip = player.board.board[index];
         });
     });
@@ -135,7 +134,6 @@ function dragEvents(player){
     draggables.forEach(draggable =>{
         draggable.addEventListener('drop', e=>{
             e.preventDefault();
-            console.log(currentShip);
             player.removeShip(currentShip);
             let index = draggable.getAttribute('id');
             let coordX = index % 10;
@@ -145,11 +143,42 @@ function dragEvents(player){
                 player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
                 renderPlayerBoard(player,player.enemy);
             } else {
-                coordX = currentIndex % 10;
-                coordY = parseInt(currentIndex / 10);
+                coordX = currentShip.start[0];
+                coordY = currentShip.start[1];
                 player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
                 renderPlayerBoard(player,player.enemy);
             }
+        })
+    })
+}
+
+function addClickEvents(player){
+    const draggables = document.querySelectorAll('.playerDrag');
+    draggables.forEach(draggable =>{
+        draggable.addEventListener('click', ()=>{
+            let index = draggable.getAttribute('id');
+            let currentShip = player.board.board[index];
+            let coordX = currentShip.start[0];
+            let coordY = currentShip.start[1];
+            let newOrientation = null;
+            
+            
+            if (player.board.board[index].orientation == 'vertical'){
+                newOrientation = 'horizontal';
+            } else {
+                newOrientation = 'vertical';
+            }            
+            
+            player.removeShip(currentShip);
+
+            let checkFit = player.board.checkIfFit(currentShip, coordX,coordY, newOrientation);
+            if (checkFit == true ){
+                currentShip.orientation = newOrientation;
+                player.board.placeShip(currentShip, coordX, coordY,newOrientation);
+            } else {
+                player.board.placeShip(currentShip,coordX,coordY,currentShip.orientation);
+            }
+            renderPlayerBoard(player,player.enemy);
         })
     })
 }
