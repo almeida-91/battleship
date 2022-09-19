@@ -5,6 +5,7 @@ export function newShip(length){
         hitAreas : [],
         Sunk : false,
         start : null,
+        orientation : null,
 
         hit : function (coords){
             this.hitAreas.push(coords);
@@ -28,6 +29,7 @@ export function newGameboard(){
 
         placeShip : function(ship, coordx, coordy, orientation){
             ship.start = [coordx,coordy];
+            ship.orientation = orientation;
             if (orientation == 'vertical'){
                 for (let i = 0 ; i < ship.length ; i++){
                     this.board[(coordy+i)*10+coordx] = ship;
@@ -110,7 +112,7 @@ export function player(name) {
         },
         removeShip : function(ship){
             for (let i = 0 ; i < this.board.board.length ; i++){
-                if (this.board.board[i]===ship) this.board.board[i] = 0;
+                if (this.board.board[i].start===ship.start) this.board.board[i] = 0;
             }
         },
 

@@ -17,31 +17,8 @@ function startGame(){
     cpu.name = "CPU";
     cpu.board.newboard();
 
-        /* For testing  */
-        /* player1.board.placeShip(4,0,0,'vertical');
-        player1.board.placeShip(3,1,0,'vertical');
-        player1.board.placeShip(3,2,0,'vertical');
-        player1.board.placeShip(2,3,0,'vertical');
-        player1.board.placeShip(2,4,0,'vertical');
-        player1.board.placeShip(2,5,0,'vertical');
-        player1.board.placeShip(1,6,0,'vertical');
-        player1.board.placeShip(1,7,0,'vertical');
-        player1.board.placeShip(1,8,0,'vertical');
-        player1.board.placeShip(1,9,0,'vertical'); */
-        player1.randomizeBoard();
-
-        /* cpu.board.placeShip(4,0,0,'vertical');
-        cpu.board.placeShip(3,1,0,'vertical');
-        cpu.board.placeShip(3,2,0,'vertical');
-        cpu.board.placeShip(2,3,0,'vertical');
-        cpu.board.placeShip(2,4,0,'vertical');
-        cpu.board.placeShip(2,5,0,'vertical');
-        cpu.board.placeShip(1,6,0,'vertical');
-        cpu.board.placeShip(1,7,0,'vertical');
-        cpu.board.placeShip(1,8,0,'vertical');
-        cpu.board.placeShip(1,9,0,'vertical'); */
-        cpu.randomizeBoard();
-        /* Test end     */
+    player1.randomizeBoard();
+    cpu.randomizeBoard();
 
     player1.enemy = cpu;
     cpu.enemy = player1;
@@ -58,7 +35,10 @@ function renderPlayerBoard(player,cpu){
     for (let i = 0 ; i < player.board.board.length ; i++){
         let renderSpot = player.board.board[i];
         let currentSpot = document.createElement('div');
+        currentSpot.classList.add('playerDrag');
         currentSpot.setAttribute('draggable',true);
+        currentSpot.setAttribute('id',i);
+
         if (renderSpot == 'M'){
             currentSpot.style.backgroundColor = 'cornflowerblue';
         } else if (renderSpot == 'X'){
@@ -69,6 +49,7 @@ function renderPlayerBoard(player,cpu){
         playerBoard.appendChild(currentSpot);
     }
     gameContainer.appendChild(playerBoard);
+    dragEvents(player);
     renderEnemyBoard(cpu,player);
 }
 
@@ -127,4 +108,42 @@ function showWinner(player){
     winText.textContent = `${player.name} Wins!`;
     gameContainer.appendChild(winText);
     gameContainer.appendChild(newGameButton);
+}
+
+
+
+function dragEvents(player){
+    const draggables = document.querySelectorAll('.playerDrag');
+    let currentShip = null;
+    
+    draggables.forEach(draggable =>{
+        draggable.addEventListener('dragstart', ()=>{
+            let index = draggable.getAttribute('id');
+            currentShip = player.board.board[index];
+        });
+    });
+
+    draggables.forEach(draggable =>{
+        draggable.addEventListener('dragover', e =>{
+            e.preventDefault();
+        })
+    })
+
+    draggables.forEach(draggable =>{
+        draggable.addEventListener('drop', e=>{
+            e.preventDefault();
+            let index = draggable.getAttribute('id');
+            let coordX = index % 10;
+            let coordY = parseInt(index / 10);
+            console.log(coordX);
+            console.log(coordY);
+            let checkFit = player.board.checkIfFit(currentShip, coordX,coordY, currentShip.orientation)
+            console.log(checkFit);
+            if (checkFit == true){
+                player.removeShip(currentShip);
+                player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
+                renderPlayerBoard(player,player.enemy);
+            }
+        })
+    })
 }
