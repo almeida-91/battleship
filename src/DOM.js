@@ -132,15 +132,13 @@ function dragEvents(player){
     draggables.forEach(draggable =>{
         draggable.addEventListener('drop', e=>{
             e.preventDefault();
+            console.log(currentShip);
+            player.removeShip(currentShip);
             let index = draggable.getAttribute('id');
             let coordX = index % 10;
             let coordY = parseInt(index / 10);
-            console.log(coordX);
-            console.log(coordY);
             let checkFit = player.board.checkIfFit(currentShip, coordX,coordY, currentShip.orientation)
-            console.log(checkFit);
             if (checkFit == true){
-                player.removeShip(currentShip);
                 player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
                 renderPlayerBoard(player,player.enemy);
             }

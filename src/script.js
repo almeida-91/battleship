@@ -4,7 +4,7 @@ export function newShip(length){
         length : length,
         hitAreas : [],
         Sunk : false,
-        start : null,
+        start : [],
         orientation : null,
 
         hit : function (coords){
@@ -28,7 +28,8 @@ export function newGameboard(){
             },
 
         placeShip : function(ship, coordx, coordy, orientation){
-            ship.start = [coordx,coordy];
+            ship.start.push(coordx);
+            ship.start.push(coordy);
             ship.orientation = orientation;
             if (orientation == 'vertical'){
                 for (let i = 0 ; i < ship.length ; i++){
@@ -91,8 +92,10 @@ export function player(name) {
         board : newGameboard(),
         ships : [[newShip(5),1],
                 [newShip(4),1],
-                [newShip(3),2],
+                [newShip(3),1],
+                [newShip(3),1],
                 [newShip(2),1]],
+
         attack : function(coordX,coordY){
             this.enemy.board.receiveAttack(coordX,coordY);
         },
@@ -112,7 +115,10 @@ export function player(name) {
         },
         removeShip : function(ship){
             for (let i = 0 ; i < this.board.board.length ; i++){
-                if (this.board.board[i].start===ship.start) this.board.board[i] = 0;
+                if( this.board.board[i]!= 0){
+                    if (this.board.board[i].start[0]===ship.start[0]
+                        && this.board.board[i].start[1]===ship.start[1]) this.board.board[i] = 0;
+                    }
             }
         },
 
