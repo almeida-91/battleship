@@ -1,4 +1,4 @@
-import { player } from "./script.js";
+import { newShip, player } from "./script.js";
 
 const startButton = document.getElementsByTagName('button')[0];
 const pvpButton = document.getElementsByTagName('button')[1];
@@ -10,6 +10,7 @@ startButton.addEventListener('click',()=>{startGame(1)});
 pvpButton.addEventListener('click',()=>{startGame(2)});
 
 function startGame(players){
+    turn = 0;
     let player1 = player();
     player1.name = "P1";
     player1.board.newboard();
@@ -19,7 +20,7 @@ function startGame(players){
     cpu.board.newboard();
 
     player1.randomizeBoard();
-    cpu.randomizeBoard();
+    cpu.randomizeBoard(); 
 
     player1.enemy = cpu;
     cpu.enemy = player1;
@@ -36,24 +37,33 @@ function renderPlayerBoard(player,cpu,players,target=1){
     for (let i = 0 ; i < player.board.board.length ; i++){
         let renderSpot = player.board.board[i];
         let currentSpot = document.createElement('div');
-        if (turn == 0){
-            currentSpot.classList.add('playerDrag');
-            currentSpot.setAttribute('draggable',true);
-            currentSpot.setAttribute('id',i);
-        }
-
+        currentSpot.setAttribute('id',i);
+        currentSpot.classList.add('dropzone');
+        currentSpot.setAttribute('draggable',false);
         if (renderSpot == 'M'){
             currentSpot.style.backgroundColor = 'cornflowerblue';
         } else if (renderSpot == 'X'){
             currentSpot.style.backgroundColor = 'red';
         } else if (typeof renderSpot == 'object'){
             currentSpot.style.backgroundColor = 'blue';
+            currentSpot.setAttribute('draggable',true);
+            currentSpot.classList.add('playerDrag');
         }
         playerBoard.appendChild(currentSpot);
     }
+
+    if (turn == 0 && players == 2){
+        let switchButton = document.getElementById('switch');
+        if (switchButton == undefined){
+            addSwitchButton(player);   
+        }
+    }
+
     gameContainer.appendChild(playerBoard);
-    addDragEvents(player);
-    addClickEvents(player);
+    addDragEvents(player,players);
+    addClickEvents(player,players);
+
+    if (turn == 0 && players == 2) return;
     renderEnemyBoard(cpu,player,players,target);
 }
 
@@ -76,12 +86,48 @@ function renderEnemyBoard(enemy,player,players, target = 1){
     gameContainer.appendChild(enemyBoard);
 }
 
+function addSwitchButton(player){
+    let switchButton = document.createElement('button');
+    switchButton.id = 'switch';
+    switchButton.textContent = 'Ready!';
+    let footer = document.getElementsByTagName('footer')[0];
+    document.body.insertBefore(switchButton,footer);
+    switchButton.addEventListener('click', async ()=>{
+        document.body.removeChild(switchButton);
+        playerSwitch();
+        await waitTurn(5000);
+        let textDiv = document.getElementById('loadtext');
+        document.body.removeChild(textDiv);
+        renderPlayerBoard(player.enemy,player,2);
+        addStartButton(player.enemy);
+    })
+}
+
+function addStartButton(player){
+    let switchButton = document.getElementById('switch');
+    document.body.removeChild(switchButton);
+    let startButton = document.createElement('button');
+    startButton.textContent = 'Start!';
+    let footer = document.getElementsByTagName('footer')[0];
+    document.body.insertBefore(startButton,footer);
+    startButton.addEventListener('click', async ()=>{
+        turn++;
+        document.body.removeChild(startButton);
+        playerSwitch();
+        await waitTurn(5000);
+        let textDiv = document.getElementById('loadtext');
+        document.body.removeChild(textDiv);
+        renderPlayerBoard(player.enemy,player,2);
+    })
+}
+
 function addTarget(zone, index,player,cpu,players){
-    zone.addEventListener('click', () =>{addTargetDiv(zone, index,player,cpu,players)});
+    zone.addEventListener('click', () =>{
+    addTargetDiv(zone, index,player,cpu,players)
+    });
 }
 
 async function addTargetDiv(zone, index,player,cpu,players) {
-    turn++;
     let coordX = index%10;
     let coordY = parseInt(index/10);
     player.attack(coordX,coordY);
@@ -151,46 +197,50 @@ function showWinner(player){
 
 
 
-function addDragEvents(player){
+function addDragEvents(player,players){
     const draggables = document.querySelectorAll('.playerDrag');
+    let dropzones = document.querySelectorAll('.dropzone');
     let currentShip = null;
+    let index = 0;
     
     draggables.forEach(draggable =>{
         draggable.addEventListener('dragstart', ()=>{
-            let index = draggable.getAttribute('id');
+            index = draggable.getAttribute('id');
             currentShip = player.board.board[index];
         });
     });
 
-    draggables.forEach(draggable =>{
-        draggable.addEventListener('dragover', e =>{
+    dropzones.forEach(dropzone =>{
+        dropzone.addEventListener('dragover', e =>{
             e.preventDefault();
-            draggable.classList.add('dragover');
         })
     })
 
-    draggables.forEach(draggable =>{
-        draggable.addEventListener('drop', e=>{
-            e.preventDefault();
-            player.removeShip(currentShip);
-            let index = draggable.getAttribute('id');
-            let coordX = index % 10;
-            let coordY = parseInt(index / 10);
-            let checkFit = player.board.checkIfFit(currentShip, coordX,coordY, currentShip.orientation)
-            if (checkFit == true){
-                player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
-                renderPlayerBoard(player,player.enemy);
-            } else {
-                coordX = currentShip.start[0];
-                coordY = currentShip.start[1];
-                player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
-                renderPlayerBoard(player,player.enemy);
+    dropzones.forEach(dropzone =>{
+        dropzone.addEventListener('drop', e=>{
+            if (typeof (player.board.board[index])== 'object' ){
+                
+                e.preventDefault();
+                index = dropzone.getAttribute('id');
+                player.removeShip(currentShip);
+                let coordX = index % 10;
+                let coordY = parseInt(index / 10);
+                let checkFit = player.board.checkIfFit(currentShip, coordX,coordY, currentShip.orientation)
+                if (checkFit == true){
+                    player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
+                    renderPlayerBoard(player,player.enemy,players);
+                } else {
+                    coordX = currentShip.start[0];
+                    coordY = currentShip.start[1];
+                    player.board.placeShip(currentShip, coordX,coordY, currentShip.orientation);
+                    renderPlayerBoard(player,player.enemy,players);
+                }
             }
         })
     })
 }
 
-function addClickEvents(player){
+function addClickEvents(player,players){
     const draggables = document.querySelectorAll('.playerDrag');
     draggables.forEach(draggable =>{
         draggable.addEventListener('click', ()=>{
@@ -216,7 +266,7 @@ function addClickEvents(player){
             } else {
                 player.board.placeShip(currentShip,coordX,coordY,currentShip.orientation);
             }
-            renderPlayerBoard(player,player.enemy);
+            renderPlayerBoard(player,player.enemy,players);
         })
     })
 }
