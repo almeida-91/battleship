@@ -1,14 +1,15 @@
 import { player } from "./script.js";
 
 const startButton = document.getElementsByTagName('button')[0];
-const randomButton = document.getElementsByTagName('button')[1];
+const pvpButton = document.getElementsByTagName('button')[1];
 
 let gameContainer = document.getElementById('gameContainer');
+let turn  = 0;
 
-startButton.addEventListener('click',startGame);
-//randomButton.addEventListener('click',randomize);
+startButton.addEventListener('click',()=>{startGame(1)});
+pvpButton.addEventListener('click',()=>{startGame(2)});
 
-function startGame(){
+function startGame(players){
     let player1 = player();
     player1.name = "P1";
     player1.board.newboard();
@@ -22,10 +23,10 @@ function startGame(){
 
     player1.enemy = cpu;
     cpu.enemy = player1;
-    renderPlayerBoard(player1,cpu);
+    renderPlayerBoard(player1,cpu,players);
 }
 
-function renderPlayerBoard(player,cpu){
+function renderPlayerBoard(player,cpu,players,target=1){
     if (isGameOver(player,cpu) == true){
         return;
     }
@@ -35,9 +36,11 @@ function renderPlayerBoard(player,cpu){
     for (let i = 0 ; i < player.board.board.length ; i++){
         let renderSpot = player.board.board[i];
         let currentSpot = document.createElement('div');
-        currentSpot.classList.add('playerDrag');
-        currentSpot.setAttribute('draggable',true);
-        currentSpot.setAttribute('id',i);
+        if (turn == 0){
+            currentSpot.classList.add('playerDrag');
+            currentSpot.setAttribute('draggable',true);
+            currentSpot.setAttribute('id',i);
+        }
 
         if (renderSpot == 'M'){
             currentSpot.style.backgroundColor = 'cornflowerblue';
@@ -51,10 +54,10 @@ function renderPlayerBoard(player,cpu){
     gameContainer.appendChild(playerBoard);
     addDragEvents(player);
     addClickEvents(player);
-    renderEnemyBoard(cpu,player);
+    renderEnemyBoard(cpu,player,players,target);
 }
 
-function renderEnemyBoard(enemy,player){
+function renderEnemyBoard(enemy,player,players, target = 1){
     let enemyBoard = document.createElement('div');
     enemyBoard.classList.add('board');
     for (let i = 0 ; i < enemy.board.board.length ; i++){
@@ -64,25 +67,60 @@ function renderEnemyBoard(enemy,player){
             currentSpot.style.backgroundColor = 'cornflowerblue';
         } else if (renderSpot == 'X'){
             currentSpot.style.backgroundColor = 'red';
-        } else {
+        } else if (target == 1) {
             currentSpot.classList.add('target');
-            addTarget(currentSpot,i,player,enemy);
+            addTarget(currentSpot,i,player,enemy,players);
         }
         enemyBoard.appendChild(currentSpot);
     }
     gameContainer.appendChild(enemyBoard);
 }
 
-function addTarget(zone, index,player,cpu){
-    zone.addEventListener('click',()=>{
-        let coordX = index%10;
-        let coordY = parseInt(index/10);
-        player.attack(coordX,coordY);
+function addTarget(zone, index,player,cpu,players){
+    zone.addEventListener('click', () =>{addTargetDiv(zone, index,player,cpu,players)});
+}
+
+async function addTargetDiv(zone, index,player,cpu,players) {
+    turn++;
+    let coordX = index%10;
+    let coordY = parseInt(index/10);
+    player.attack(coordX,coordY);
+    if (players == 1){
         if (cpu.board.board[index] == 'M'){
             cpuTurn(cpu);
         }
-        renderPlayerBoard(player,cpu);
-    })
+        renderPlayerBoard(player,cpu,players);
+    } else {
+        if (cpu.board.board[index] == 'M'){
+            renderPlayerBoard(player,cpu,players,0);
+            await waitTurn(1000);
+            playerSwitch();
+            await waitTurn(5000);
+            let textDiv = document.getElementById('loadtext');
+            document.body.removeChild(textDiv);
+            renderPlayerBoard(cpu,player,players);
+        } else {
+            renderPlayerBoard(player,cpu,players);
+        }
+    }
+}
+
+function playerSwitch(){
+    gameContainer.innerHTML = '';
+    let loadDiv = document.createElement('div');
+    let textDiv = document.createElement('div');
+    let footer = document.getElementsByTagName('footer')[0];
+
+    loadDiv.classList.add('loader');
+    textDiv.textContent = 'Switching players';
+    textDiv.setAttribute('id','loadtext');
+
+    gameContainer.appendChild(loadDiv);
+    document.body.insertBefore(textDiv,footer);
+}
+
+function waitTurn(ms){
+    return new Promise(resolve => setTimeout(resolve,ms));
 }
 
 function cpuTurn(cpu){
