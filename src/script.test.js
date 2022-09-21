@@ -46,7 +46,7 @@ test('Receive attack hit', ()=>{
     let ship = newShip(2);
     b.placeShip(ship,0,0,"horizontal")
     b.receiveAttack(0,0);
-    expect(b.board[0]).toBe('X');
+    expect(b.board[0].hitAreas).toStrictEqual([0]);
 })
 
 test('Game Over false', ()=>{
@@ -74,7 +74,7 @@ test('Player attack', ()=>{
     cpu.board.newboard();
     cpu.board.placeShip(cpu.ships[0][0],0,0,'horizontal');
     player1.attack(0,0);
-    expect(cpu.board.board[0]).toBe('X');
+    expect(cpu.board.board[0].hitAreas).toStrictEqual([0]);
 })
 
 test('Remove Ship', ()=>{
@@ -92,4 +92,18 @@ test('Ship comparison', ()=>{
     let ship = player1.ships[0][0];
     let ship1 = player1.ships[0][0];
     expect(ship==ship1).toBe(true);
+})
+
+test('isAreaHit true', ()=>{
+    let player1 = player();
+    player1.name = 'P1';
+    let cpu = player();
+    cpu.name = 'CPU';
+    player1.enemy = cpu;
+    cpu.enemy = player1;
+    player1.board.newboard();
+    cpu.board.newboard();
+    cpu.board.placeShip(cpu.ships[0][0],0,0,'horizontal');
+    player1.attack(0,0);
+    expect(cpu.board.board[0].isAreaHit(0)).toBe(true);
 })

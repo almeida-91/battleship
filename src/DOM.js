@@ -1,7 +1,12 @@
 import { newShip, player } from "./script.js";
+//import gitIcon from "./images/github.png";
 
 const startButton = document.getElementsByTagName('button')[0];
 const pvpButton = document.getElementsByTagName('button')[1];
+let footer = document.getElementsByTagName('footer')[0];
+let gitImage = document.createElement('img');
+//gitImage.src = gitIcon;
+//footer.appendChild(gitIcon);
 
 let gameContainer = document.getElementById('gameContainer');
 let turn  = 0;
@@ -12,7 +17,7 @@ pvpButton.addEventListener('click',()=>{startGame(2)});
 function startGame(players){
     turn = 0;
     let player1 = player();
-    player1.name = "P1";
+    player1.name = prompt("Enter Player 1 Name :","Player 1");
     player1.board.newboard();
 
     let cpu = player();
@@ -41,13 +46,19 @@ function renderPlayerBoard(player,cpu,players,target=1){
         currentSpot.classList.add('dropzone');
         currentSpot.setAttribute('draggable',false);
         if (renderSpot == 'M'){
-            currentSpot.style.backgroundColor = 'cornflowerblue';
-        } else if (renderSpot == 'X'){
-            currentSpot.style.backgroundColor = 'red';
+            currentSpot.style.backgroundColor = 'gray';
         } else if (typeof renderSpot == 'object'){
-            currentSpot.style.backgroundColor = 'blue';
-            currentSpot.setAttribute('draggable',true);
-            currentSpot.classList.add('playerDrag');
+            currentSpot.style.backgroundColor = 'cornflowerblue';
+            if (turn == 0){
+                currentSpot.setAttribute('draggable',true);
+                currentSpot.classList.add('playerDrag');
+            }
+            if (renderSpot.isAreaHit(i)==true){
+                currentSpot.style.backgroundColor = 'orange';
+            }
+            if (renderSpot.isSunk() == true) {
+                currentSpot.style.backgroundColor = 'red';
+            }
         }
         playerBoard.appendChild(currentSpot);
     }
@@ -75,13 +86,20 @@ function renderEnemyBoard(enemy,player,players, target = 1){
         let renderSpot = enemy.board.board[i];
         let currentSpot = document.createElement('div');
         if (renderSpot == 'M'){
-            currentSpot.style.backgroundColor = 'cornflowerblue';
-        } else if (renderSpot == 'X'){
-            currentSpot.style.backgroundColor = 'red';
-        } else if (target == 1) {
-            currentSpot.classList.add('target');
+            currentSpot.style.backgroundColor = 'gray';
+        } else if (typeof renderSpot == 'object'){
+            if (renderSpot.isAreaHit(i)==true){
+                currentSpot.style.backgroundColor = 'orange';
+            }
+            if (renderSpot.isSunk() == true) {
+                currentSpot.style.backgroundColor = 'red';
+            } else {
+                addTarget(currentSpot,i,player,enemy,players);
+            }
+        } else {
             addTarget(currentSpot,i,player,enemy,players);
         }
+        currentSpot.classList.add('target');
         enemyBoard.appendChild(currentSpot);
     }
     gameContainer.appendChild(enemyBoard);
@@ -125,7 +143,8 @@ function addStartButton(player){
 
 function addTarget(zone, index,player,cpu,players){
     zone.addEventListener('click', () =>{
-    addTargetDiv(zone, index,player,cpu,players)
+        turn++;
+        addTargetDiv(zone, index,player,cpu,players)
     });
 }
 
@@ -195,7 +214,6 @@ function isGameOver(player,cpu){
 }
 
 function showWinner(player){
-    let newGameButton = document.createElement('button');
     gameContainer.innerHTML = '';
     let winText = document.createElement('p');
     winText.textContent = `${player.name} Wins!`;

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins&display=swap');
+
 *{
     margin: 0;
     padding: 0;
@@ -6,11 +8,13 @@
 
 html,
 body {
+    font-family: 'Poppins', sans-serif;
     height: 100%;
     width: 100%;
 }
 
 body {
+    background-color: gainsboro;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,12 +31,32 @@ body {
     display: grid;
     grid-template-columns: repeat(10,30px);
     grid-template-rows: repeat(10,30px);
-    background-color: black;
-    gap: 1px;margin: 20px;
+    background-color: white;
+    gap: 2px;
+    margin: 20px;
+    padding: 5px;
 }
 
-.board div {
-    background-color: white;
+button {
+    background-color: gray;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    font-weight: 700;
+    margin: 10px;
+}
+
+h1 {
+    align-self: flex-start;
+    background-color: gray;
+    color: white;
+    padding: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+button:hover {
+    background-color: darkgrey;
 }
 
 #gameContainer {
@@ -45,14 +69,15 @@ body {
     border-color: 2px solid greenyellow;
 }
 
-.dragover {
-    background-color: rgb(119, 255, 0);
+.board div {
+    background-color: gainsboro;
 }
 
 .loader {
-    background-color: gray;
+    margin-top: 30px;
+    justify-self: center;
     border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3498db; /* Blue */
+    border-top: 16px solid gray; /* Blue */
     border-radius: 50%;
     width: 120px;
     height: 120px;
@@ -66,6 +91,18 @@ body {
 
   footer {
     flex-shrink: 0;
+    align-self: flex-end;
+    background-color: gray;
+    color: white;
+    font-weight: 500;
+    padding: 10px;
+    border-top-left-radius: 10px;
+  }
+
+  footer a {
+    text-decoration: none;
+    color: white;
+    text-decoration: underline;
   }
 
   @media screen and (max-width: 600px) {

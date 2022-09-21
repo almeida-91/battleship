@@ -14,8 +14,12 @@ export function newShip(length){
 
         isSunk : function (){
             return (this.hitAreas.length == this.length) ? this.sunk = true : this.sunk =false;
+        },
+        
+        isAreaHit : function(index){
+            if (this.hitAreas.includes(index)) return true;
+            return false;
         }
-
     }
 }
 
@@ -51,8 +55,7 @@ export function newGameboard(){
             if (target == 0){
                 this.board[coords] = 'M';
             } else {
-                target.hit(coords);
-                this.board[coords] = 'X';
+                this.board[coords].hitAreas.push(coords);
             }
             return target;
         },
@@ -61,7 +64,7 @@ export function newGameboard(){
             let aliveShips = []
             for (let i = 0 ; i < this.board.length ; i++){
                 if (typeof this.board[i] == 'object'){
-                    aliveShips.push(this.board[i]);
+                    if (this.board[i].isSunk() == false) aliveShips.push(this.board[i]);
                 }
             }
             return (aliveShips.length == 0) ? true : false;
