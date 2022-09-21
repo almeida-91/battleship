@@ -54,7 +54,8 @@ function renderPlayerBoard(player,cpu,players,target=1){
 
     if (turn == 0 && players == 2){
         let switchButton = document.getElementById('switch');
-        if (switchButton == undefined){
+        let startButton = document.getElementById('start');
+        if (switchButton == undefined && startButton == undefined){
             addSwitchButton(player);   
         }
     }
@@ -107,6 +108,7 @@ function addStartButton(player){
     let switchButton = document.getElementById('switch');
     document.body.removeChild(switchButton);
     let startButton = document.createElement('button');
+    startButton.id = 'start';
     startButton.textContent = 'Start!';
     let footer = document.getElementsByTagName('footer')[0];
     document.body.insertBefore(startButton,footer);
@@ -158,11 +160,19 @@ function playerSwitch(){
     let footer = document.getElementsByTagName('footer')[0];
 
     loadDiv.classList.add('loader');
-    textDiv.textContent = 'Switching players';
-    textDiv.setAttribute('id','loadtext');
+    textDiv.textContent = 'Pass the device!';
+    textDiv.setAttribute('id','loadtext')
 
     gameContainer.appendChild(loadDiv);
     document.body.insertBefore(textDiv,footer);
+}
+
+function countDown(){
+    let count = 5;
+    while (count > 0){
+        setInterval(count--,1000)
+        
+    }
 }
 
 function waitTurn(ms){
@@ -186,13 +196,10 @@ function isGameOver(player,cpu){
 
 function showWinner(player){
     let newGameButton = document.createElement('button');
-    newGameButton.addEventListener('click',startGame);
-    newGameButton.textContent = 'New Game';
     gameContainer.innerHTML = '';
     let winText = document.createElement('p');
     winText.textContent = `${player.name} Wins!`;
     gameContainer.appendChild(winText);
-    gameContainer.appendChild(newGameButton);
 }
 
 
