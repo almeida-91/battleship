@@ -92,6 +92,9 @@ button:hover {
   footer {
     flex-shrink: 0;
     align-self: flex-end;
+    display: flex;
+    align-items: center;
+    text-align: center;    
     background-color: gray;
     color: white;
     font-weight: 500;

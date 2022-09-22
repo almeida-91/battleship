@@ -8,6 +8,7 @@ export function newShip(length){
         orientation : null,
 
         hit : function (coords){
+            if (this.isAreaHit(coords)==true) return;
             this.hitAreas.push(coords);
             this.isSunk();
         },
@@ -20,7 +21,7 @@ export function newShip(length){
             if (this.hitAreas.includes(index)) return true;
             return false;
         }
-    }
+    };
 }
 
 export function newGameboard(){
@@ -36,7 +37,7 @@ export function newGameboard(){
             currentShip.start.push(coordx);
             currentShip.start.push(coordy);
             currentShip.orientation = orientation;
-            if (orientation == 'vertical'){
+            if (orientation == "vertical"){
                 for (let i = 0 ; i < ship.length ; i++){
                     this.board[(coordy+i)*10+coordx] = currentShip;
                 }
@@ -51,19 +52,19 @@ export function newGameboard(){
         receiveAttack : function (coordx,coordy){
             let target = this.board[coordy*10+coordx];
             let coords = coordy*10+coordx;
-            if (target != 0 && typeof target != 'object' ) return null;
+            if (target != 0 && typeof target != "object" ) return null;
             if (target == 0){
-                this.board[coords] = 'M';
+                this.board[coords] = "M";
             } else {
-                this.board[coords].hitAreas.push(coords);
+                this.board[coords].hit(coords);
             }
             return target;
         },
 
         allSunk : function (){
-            let aliveShips = []
+            let aliveShips = [];
             for (let i = 0 ; i < this.board.length ; i++){
-                if (typeof this.board[i] == 'object'){
+                if (typeof this.board[i] == "object"){
                     if (this.board[i].isSunk() == false) aliveShips.push(this.board[i]);
                 }
             }
@@ -72,20 +73,20 @@ export function newGameboard(){
 
         checkIfFit(ship,coordX,coordY,orientation){
             let coords = coordX+(coordY*10);
-            if (orientation == 'vertical'){
+            if (orientation == "vertical"){
                 if (coordY*10+ship.length*10 >100) return false;
                 for ( let i = 0 ; i < ship.length ; i++){
-                    if (typeof (this.board[coords+(i*10)]) == 'object') return false;
+                    if (typeof (this.board[coords+(i*10)]) == "object") return false;
                 }
-            } else if (orientation == 'horizontal'){
+            } else if (orientation == "horizontal"){
                 if (coordX+ship.length > 10) return false;
                 for (let i = 0 ; i < ship.length ; i++){
-                    if (typeof (this.board[coordX+i+coordY*10]) == 'object') return false;
+                    if (typeof (this.board[coordX+i+coordY*10]) == "object") return false;
                 }
             }
             return true;
         }
-    }
+    };
 }
 
 export function player(name) {
@@ -107,12 +108,12 @@ export function player(name) {
             let coordY = parseInt(Math.random()*10);
             let coords = coordY*10 + coordX;
             let target = this.enemy.board.board[coords];
-            if (target != 0 && typeof target != 'object' ) this.autoPlay();
-            if (typeof target == 'object' ){
+            if (target != 0 && typeof target != "object" ) this.autoPlay();
+            if (typeof target == "object" ){
                 this.enemy.board.receiveAttack(coordX,coordY);
                 this.autoTargetNearby(coordX,coordY);
-            };
-            if (target != 'M'){
+            }
+            if (target != "M"){
                 this.enemy.board.receiveAttack(coordX,coordY);
             } 
         },
@@ -134,9 +135,9 @@ export function player(name) {
                     let coordY = parseInt(Math.random()*10);
                     let result = parseInt(Math.random()*2);
                     if (result == 1){
-                        result = 'vertical';
+                        result = "vertical";
                     } else {
-                        result = 'horizontal';
+                        result = "horizontal";
                     }
                     if (this.board.checkIfFit(currentShip[0],coordX,coordY,result)==true){
                         this.board.placeShip(currentShip[0],coordX,coordY,result);
@@ -187,14 +188,14 @@ export function player(name) {
                 }
             }
             let target = this.enemy.board.board[newCoordX+(newCoordY*10)];
-            if (typeof target == 'object' ){
+            if (typeof target == "object" ){
                 this.enemy.board.receiveAttack(newCoordX,newCoordY);
                 this.autoTargetNearby(newCoordX,newCoordY);
-            } else if(target == 'X' || target == 'M') {
+            } else if(target == "X" || target == "M") {
                 this.autoTargetNearby(newCoordX,newCoordY);
             } else {
                 this.enemy.board.receiveAttack(newCoordX,newCoordY);
             }
         }
-    }
+    };
 }

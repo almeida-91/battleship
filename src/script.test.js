@@ -107,3 +107,20 @@ test('isAreaHit true', ()=>{
     player1.attack(0,0);
     expect(cpu.board.board[0].isAreaHit(0)).toBe(true);
 })
+
+test('isSunk false', ()=>{
+    let player1 = player();
+    player1.name = 'P1';
+    let cpu = player();
+    cpu.name = 'CPU';
+    player1.enemy = cpu;
+    cpu.enemy = player1;
+    player1.board.newboard();
+    cpu.board.newboard();
+    cpu.board.placeShip(cpu.ships[0][0],7,4,'vertical');
+    player1.attack(7,4);
+    player1.attack(7,5);
+    player1.attack(7,6);
+    player1.attack(7,7);
+    expect(cpu.board.board[47].isSunk()).toBe(false);
+})

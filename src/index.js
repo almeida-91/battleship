@@ -1,12 +1,13 @@
 import { newShip, player } from "./script.js";
-//import gitIcon from "./images/github.png";
+import './style.css';
+import gitIcon from "./images/github.png";
 
 const startButton = document.getElementsByTagName('button')[0];
 const pvpButton = document.getElementsByTagName('button')[1];
 let footer = document.getElementsByTagName('footer')[0];
 let gitImage = document.createElement('img');
-//gitImage.src = gitIcon;
-//footer.appendChild(gitIcon);
+gitImage.src = gitIcon;
+footer.appendChild(gitImage);
 
 let gameContainer = document.getElementById('gameContainer');
 let turn  = 0;
@@ -160,7 +161,6 @@ async function addTargetDiv(zone, index,player,cpu,players) {
     } else {
         if (cpu.board.board[index] == 'M'){
             renderPlayerBoard(player,cpu,players,0);
-            await waitTurn(1000);
             playerSwitch();
             await waitTurn(5000);
             let textDiv = document.getElementById('loadtext');
@@ -184,14 +184,6 @@ function playerSwitch(){
 
     gameContainer.appendChild(loadDiv);
     document.body.insertBefore(textDiv,footer);
-}
-
-function countDown(){
-    let count = 5;
-    while (count > 0){
-        setInterval(count--,1000)
-        
-    }
 }
 
 function waitTurn(ms){
@@ -219,8 +211,6 @@ function showWinner(player){
     winText.textContent = `${player.name} Wins!`;
     gameContainer.appendChild(winText);
 }
-
-
 
 function addDragEvents(player,players){
     const draggables = document.querySelectorAll('.playerDrag');
