@@ -1,5 +1,7 @@
+/* eslint-disable no-undef */
 module.exports = {
     "env": {
+        "jest" : true,
         "browser": true,
         "es2021": true
     },
@@ -14,4 +16,4 @@ module.exports = {
         "semi": ["error", "always"],
         "quotes": ["error", "double"]
     }
-}
+};
