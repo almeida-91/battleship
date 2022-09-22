@@ -31,7 +31,7 @@ function startGame(players) {
   let cpu = player();
   player1.board.newboard();
   cpu.board.newboard();
-  
+
   player1.name = prompt("Enter Player 1 Name :", "Player 1");
   if (players == 2) {
     cpu.name = prompt("Enter Player 2 Name :", "Player 2");
@@ -54,7 +54,7 @@ function renderPlayerBoard(player, cpu, players, target = 1) {
   gameContainer.innerHTML = "";
   let playerName = document.createElement("p");
   playerName.textContent = player.name;
-  
+
   let playerBoard = document.createElement("div");
   playerBoard.classList.add("board");
   for (let i = 0; i < player.board.board.length; i++) {
@@ -171,9 +171,7 @@ async function addTargetDiv(zone, index, player, cpu, players) {
   let coordY = parseInt(index / 10);
   player.attack(coordX, coordY);
   if (players == 1) {
-    if (cpu.board.board[index] == "M") {
-      cpuTurn(cpu);
-    }
+    cpuTurn(cpu);
     renderPlayerBoard(player, cpu, players);
   } else {
     if (cpu.board.board[index] == "M") {
@@ -189,11 +187,11 @@ async function addTargetDiv(zone, index, player, cpu, players) {
 }
 
 async function playerSwitch() {
-    document.body.style.pointerEvents = "none";
-    await waitTurn(1000);
-    document.body.style.pointerEvents = "auto";
-    loadingScreen();
-    await waitTurn(5000);
+  document.body.style.pointerEvents = "none";
+  await waitTurn(1000);
+  document.body.style.pointerEvents = "auto";
+  loadingScreen();
+  await waitTurn(5000);
 }
 
 function loadingScreen() {
@@ -249,6 +247,13 @@ function addDragEvents(player, players) {
     });
   });
 
+  draggables.forEach((draggable) => {
+    draggable.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      index = draggable.getAttribute("id");
+      currentShip = player.board.board[index];
+    });
+  });
 
   dropzones.forEach((dropzone) => {
     dropzone.addEventListener("dragover", (e) => {

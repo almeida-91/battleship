@@ -112,14 +112,15 @@ export function player(name) {
       let coordY = parseInt(Math.random() * 10);
       let coords = coordY * 10 + coordX;
       let target = this.enemy.board.board[coords];
-      if (target != 0 && typeof target != "object") this.autoPlay();
-      if (typeof target == "object") {
+      if (target != "M"){
+        if (typeof target == "object" &&
+        target.isAreaHit(coords)==true){
+            this.autoPlay();
+        } else {
         this.enemy.board.receiveAttack(coordX, coordY);
-        this.autoTargetNearby(coordX, coordY);
-      }
-      if (target != "M") {
-        this.enemy.board.receiveAttack(coordX, coordY);
-      }
+        }
+      } 
+      else this.autoPlay();
     },
     removeShip: function (ship) {
       for (let i = 0; i < this.board.board.length; i++) {
